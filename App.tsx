@@ -18,7 +18,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // For now, I'll render Navbar everywhere. Footer everywhere except maybe explicit player route if separated.
   
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+    <div className="dark min-h-screen bg-background text-foreground selection:bg-primary/30">
       <Navbar />
       <main>
         {children}

@@ -1,59 +1,67 @@
-import React from 'react';
-import { Bot, Search, ShoppingCart } from 'lucide-react';
+/**
+ * [INPUT]: react-router-dom - 路由导航
+ * [INPUT]: @/components/ui/button - 设计系统按钮组件
+ * [OUTPUT]: Navbar - 全局导航栏组件
+ * [POS]: 应用顶部导航，ChatGPT 风格极简设计
+ *
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
+
 import { Link, useLocation } from 'react-router-dom';
+import { Bot, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Badge } from './ui/badge';
 
 const Navbar = () => {
   const location = useLocation();
-
-  const isActive = (path: string) => {
-    return location.pathname === path ? "text-primary font-semibold" : "text-muted-foreground";
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm">
+      <div className="container mx-auto flex h-14 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60">
-            <Bot className="h-6 w-6 text-white" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+            <Bot className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold tracking-tight">AI Nexus</span>
+          <span className="text-lg font-semibold">AI Nexus</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden items-center gap-6 md:flex">
-          <Link to="/" className={`text-sm transition-colors hover:text-primary ${isActive('/')}`}>
-            首页
+        {/* Center Nav */}
+        <div className="hidden items-center gap-1 md:flex">
+          <Link to="/">
+            <Button
+              variant={isActive('/') ? 'secondary' : 'ghost'}
+              size="sm"
+              className="text-sm"
+            >
+              首页
+            </Button>
           </Link>
-          <Link to="/courses" className={`text-sm transition-colors hover:text-primary ${isActive('/courses')}`}>
-            课程大厅
+          <Link to="/courses">
+            <Button
+              variant={isActive('/courses') ? 'secondary' : 'ghost'}
+              size="sm"
+              className="text-sm"
+            >
+              课程
+            </Button>
           </Link>
-          <Link to="/design-system" className={`flex items-center gap-1 text-sm transition-colors hover:text-primary ${isActive('/design-system')}`}>
-            Design System
+          <Link to="/design-system">
+            <Button
+              variant={isActive('/design-system') ? 'secondary' : 'ghost'}
+              size="sm"
+              className="text-sm"
+            >
+              <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+              Design System
+            </Button>
           </Link>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
-          <div className="relative hidden w-64 md:block">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="搜索课程..." 
-              className="h-9 w-full bg-secondary/50 pl-9 focus-visible:ring-primary"
-            />
-          </div>
-          
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <Badge className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center p-0 text-[10px]">
-              2
-            </Badge>
-          </Button>
-          
-          <Button>登录</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm">登录</Button>
+          <Button size="sm">开始学习</Button>
         </div>
       </div>
     </nav>
