@@ -1,63 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
-import { ViewState } from './types';
+import DesignSystem from './pages/DesignSystem';
+
+// Layout wrapper to conditionally hide footer or handle layout specifics
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const isPlayer = location.pathname.includes('/course/'); 
+  // We might want footer on course details too, but previously it was hidden on PLAYER.
+  // Let's keep it consistent: Hide footer on player/course detail if desired, but typically detail pages have footers.
+  // The previous app had 'PLAYER' view state which was the course detail. 
+  // Let's only hide Navbar/Footer if it's a "fullscreen" player experience, but CourseDetail is a page.
+  // For now, I'll render Navbar everywhere. Footer everywhere except maybe explicit player route if separated.
+  
+  return (
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+      <Navbar />
+      <main>
+        {children}
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 function App() {
-  const [currentView, setCurrentView] = useState<ViewState>('HOME');
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-
-  const handleNavigate = (view: ViewState) => {
-    setCurrentView(view);
-    if (view !== 'PLAYER') {
-      setSelectedCourseId(null);
-    }
-    window.scrollTo(0, 0);
-  };
-
-  const handleCourseSelect = (courseId: string) => {
-    setSelectedCourseId(courseId);
-    setCurrentView('PLAYER');
-    window.scrollTo(0, 0);
-  };
-
   return (
-    <div className="min-h-screen bg-dark-900 text-slate-200 selection:bg-primary-500/30">
-      {currentView !== 'PLAYER' && (
-        <Navbar currentView={currentView} onNavigate={handleNavigate} />
-      )}
-      
-      <main>
-        {currentView === 'HOME' && (
-          <Home onNavigate={handleNavigate} />
-        )}
-        
-        {currentView === 'CATALOG' && (
-          <Courses onCourseSelect={handleCourseSelect} />
-        )}
-        
-        {currentView === 'PLAYER' && selectedCourseId && (
-          <CourseDetail 
-            courseId={selectedCourseId} 
-            onBack={handleNavigate} 
-          />
-        )}
-      </main>
-
-      {/* Simple Footer */}
-      {currentView !== 'PLAYER' && (
-        <footer className="border-t border-white/5 bg-dark-900 py-12 text-center text-sm text-slate-500">
-            <p>© 2024 AI Nexus. All rights reserved.</p>
-            <div className="mt-4 flex justify-center gap-6">
-                <a href="#" className="hover:text-white">Privacy Policy</a>
-                <a href="#" className="hover:text-white">Terms of Service</a>
-                <a href="#" className="hover:text-white">Contact</a>
-            </div>
-        </footer>
-      )}
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
+          <Route path="/design-system" element={<DesignSystem />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
 
