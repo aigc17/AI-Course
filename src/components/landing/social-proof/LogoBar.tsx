@@ -10,25 +10,19 @@ import { motion } from 'framer-motion'
 import { fadeIn, viewportConfig } from '@/lib/motion'
 
 // ============================================================================
-// 内容配置（实际项目中替换为真实 Logo）
+// 内容配置
 // ============================================================================
 
-const LOGOS = [
-  { name: 'OpenAI', placeholder: 'OpenAI' },
-  { name: 'Google', placeholder: 'Google' },
-  { name: 'Microsoft', placeholder: 'Microsoft' },
-  { name: 'Meta', placeholder: 'Meta' },
-  { name: 'Anthropic', placeholder: 'Anthropic' },
-]
+const LOGOS = ['OpenAI', 'Google', 'Microsoft', 'Meta', 'Anthropic']
 
 // ============================================================================
 // 子组件
 // ============================================================================
 
 const LogoItem = ({ name }: { name: string }) => (
-  <div className="flex h-12 items-center justify-center px-6 text-lg font-semibold text-muted-foreground/60 transition-colors hover:text-muted-foreground">
+  <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground/50 transition-colors hover:text-foreground">
     {name}
-  </div>
+  </span>
 )
 
 // ============================================================================
@@ -41,14 +35,14 @@ const LogoBar = () => (
     whileInView="visible"
     viewport={viewportConfig}
     variants={fadeIn}
-    className="border-y border-border/40 py-12"
+    className="border-y border-border py-12"
   >
     <div className="mx-auto max-w-7xl px-4">
-      <p className="mb-8 text-center text-sm text-muted-foreground">
+      <p className="mb-8 text-center text-xs uppercase tracking-wider text-muted-foreground">
         受到行业领先企业信赖
       </p>
-      <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-        {LOGOS.map(logo => <LogoItem key={logo.name} name={logo.name} />)}
+      <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+        {LOGOS.map(name => <LogoItem key={name} name={name} />)}
       </div>
     </div>
   </motion.section>

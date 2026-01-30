@@ -7,7 +7,6 @@
  */
 
 import { motion } from 'framer-motion'
-import { AlertCircle } from 'lucide-react'
 import { fadeInUp, staggerContainer, viewportConfig } from '@/lib/motion'
 
 // ============================================================================
@@ -28,14 +27,8 @@ const CONTENT = {
 // ============================================================================
 
 const PainPointCard = ({ title, desc }: { title: string; desc: string }) => (
-  <motion.div
-    variants={fadeInUp}
-    className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6"
-  >
-    <div className="mb-3 flex items-center gap-2 text-destructive">
-      <AlertCircle className="h-5 w-5" />
-      <h3 className="font-semibold">{title}</h3>
-    </div>
+  <motion.div variants={fadeInUp} className="border border-border p-6">
+    <h3 className="mb-2 font-semibold">{title}</h3>
     <p className="text-sm text-muted-foreground">{desc}</p>
   </motion.div>
 )
@@ -45,7 +38,7 @@ const PainPointCard = ({ title, desc }: { title: string; desc: string }) => (
 // ============================================================================
 
 const ProblemSection = () => (
-  <section className="bg-muted/30 py-20 md:py-28">
+  <section className="py-20 md:py-28">
     <motion.div
       initial="hidden"
       whileInView="visible"

@@ -33,17 +33,18 @@ const Headline = () => (
 )
 
 const Subheadline = () => (
-  <motion.p variants={fadeInUp} className="mb-8 text-lg text-muted-foreground">
+  <motion.p variants={fadeInUp} className="mb-8 text-muted-foreground">
     {CONTENT.subheadline}
   </motion.p>
 )
 
 const CTAButtons = () => (
-  <motion.div variants={fadeInUp} className="flex flex-col gap-4 sm:flex-row">
-    <Button size="lg" rightIcon={<ArrowRight className="h-4 w-4" />}>
+  <motion.div variants={fadeInUp} className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+    <Button size="lg" className="h-12 rounded-none bg-foreground px-8 text-background hover:bg-foreground/90">
       {CONTENT.primaryCTA}
+      <ArrowRight className="ml-2 h-4 w-4" />
     </Button>
-    <Button size="lg" variant="outline">
+    <Button size="lg" variant="outline" className="h-12 rounded-none border-foreground px-8">
       {CONTENT.secondaryCTA}
     </Button>
   </motion.div>
@@ -54,7 +55,7 @@ const CTAButtons = () => (
 // ============================================================================
 
 const FinalCTA = () => (
-  <section className="bg-primary/5 py-20 md:py-28">
+  <section className="py-20 md:py-28">
     <motion.div
       initial="hidden"
       whileInView="visible"
