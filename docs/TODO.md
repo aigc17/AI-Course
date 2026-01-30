@@ -14,9 +14,9 @@ Phase 3: 支付闭环        [⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜] 0%
 
 | 阶段 | 状态 | 任务数 | 完成数 | 文档 |
 |------|------|--------|--------|------|
-| Phase 1 | 🚧 进行中 | 20 | 0 | [phase-1-auth.md](./phase-1-auth.md) |
-| Phase 2 | ⬜ 待开始 | 26 | 0 | [phase-2-course.md](./phase-2-course.md) |
-| Phase 3 | ⬜ 待开始 | 20 | 0 | [phase-3-payment.md](./phase-3-payment.md) |
+| Phase 1 | 🚧 进行中 | 20 | 0 | [phase-1-auth.md](./phases/phase-1-auth.md) |
+| Phase 2 | ⬜ 待开始 | 26 | 0 | [phase-2-course.md](./phases/phase-2-course.md) |
+| Phase 3 | ⬜ 待开始 | 20 | 0 | [phase-3-payment.md](./phases/phase-3-payment.md) |
 
 ## 当前焦点
 
@@ -30,13 +30,17 @@ Phase 3: 支付闭环        [⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜] 0%
 ## 快速导航
 
 ### 规划文档
-- [PRD.md](./PRD.md) - 产品需求文档
-- [TECH-SPEC.md](./TECH-SPEC.md) - 技术架构文档
+- [PRD.md](./planning/PRD.md) - 产品需求文档
+- [TECH-SPEC.md](./planning/TECH-SPEC.md) - 技术架构文档
+- [API-SPEC.md](./planning/API-SPEC.md) - API 接口规范
+- [PAGES.md](./planning/PAGES.md) - 页面结构
+- [DEPLOY.md](./planning/DEPLOY.md) - 部署指南
+- [ENV-TEMPLATE.md](./planning/ENV-TEMPLATE.md) - 环境变量模板
 
 ### 阶段文档
-- [phase-1-auth.md](./phase-1-auth.md) - 基础设施 + 认证
-- [phase-2-course.md](./phase-2-course.md) - 课程管理
-- [phase-3-payment.md](./phase-3-payment.md) - 支付闭环
+- [phase-1-auth.md](./phases/phase-1-auth.md) - 基础设施 + 认证
+- [phase-2-course.md](./phases/phase-2-course.md) - 课程管理
+- [phase-3-payment.md](./phases/phase-3-payment.md) - 支付闭环
 
 ## AI 工作指南
 

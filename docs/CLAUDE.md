@@ -4,17 +4,21 @@
 
 > 产品规划、技术架构、开发进度追踪文档
 
-## 成员清单
+## 目录结构
 
-### 规划文档
-- `PRD.md`: 产品需求文档，功能模块、用户故事、里程碑规划
-- `TECH-SPEC.md`: 技术架构文档，Supabase + Cloudflare 技术栈
-
-### 进度追踪
-- `TODO.md`: **入口文档**，开发进度总览，AI 工作指南
-- `phase-1-auth.md`: Phase 1 任务清单，基础设施 + 认证
-- `phase-2-course.md`: Phase 2 任务清单，课程管理
-- `phase-3-payment.md`: Phase 3 任务清单，支付闭环
+```
+docs/
+├── TODO.md              ← 入口文档，进度总览
+├── planning/            ← 规划文档
+│   ├── PRD.md           - 产品需求
+│   ├── TECH-SPEC.md     - 技术架构
+│   ├── API-SPEC.md      - 接口规范
+│   └── PAGES.md         - 页面结构
+└── phases/              ← 阶段任务
+    ├── phase-1-auth.md  - 基础设施 + 认证
+    ├── phase-2-course.md- 课程管理
+    └── phase-3-payment.md- 支付闭环
+```
 
 ## AI 工作流程
 
