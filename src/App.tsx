@@ -1,3 +1,13 @@
+/**
+ * [INPUT]: react-router-dom - 路由管理
+ * [INPUT]: @/components/* - 布局组件
+ * [INPUT]: @/pages/* - 页面组件
+ * [OUTPUT]: App - 应用根组件
+ * [POS]: 应用入口，定义路由和全局布局
+ *
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
+
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -18,7 +28,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // For now, I'll render Navbar everywhere. Footer everywhere except maybe explicit player route if separated.
   
   return (
-    <div className="dark min-h-screen bg-background text-foreground selection:bg-primary/30">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
       <Navbar />
       <main>
         {children}
