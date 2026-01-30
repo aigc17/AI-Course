@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Plus, GripVertical, Pencil, Trash2, Video, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/form/button';
@@ -93,6 +94,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
             <ChapterItem
               key={chapter.id}
               chapter={chapter}
+              courseId={courseId}
               isEditing={editingId === chapter.id}
               onEdit={() => setEditingId(chapter.id)}
               onCancel={() => setEditingId(null)}
@@ -124,6 +126,7 @@ export function ChapterList({ courseId }: ChapterListProps) {
 
 interface ChapterItemProps {
   chapter: Chapter;
+  courseId: string;
   isEditing: boolean;
   onEdit: () => void;
   onCancel: () => void;
@@ -131,7 +134,7 @@ interface ChapterItemProps {
   onDelete: () => void;
 }
 
-function ChapterItem({ chapter, isEditing, onEdit, onCancel, onSave, onDelete }: ChapterItemProps) {
+function ChapterItem({ chapter, courseId, isEditing, onEdit, onCancel, onSave, onDelete }: ChapterItemProps) {
   if (isEditing) {
     return (
       <div className="p-4">
@@ -146,7 +149,12 @@ function ChapterItem({ chapter, isEditing, onEdit, onCancel, onSave, onDelete }:
     <div className="flex items-center gap-3 p-4 hover:bg-muted/30">
       <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
       <Icon className="h-4 w-4 text-muted-foreground" />
-      <span className="flex-1">{chapter.title}</span>
+      <Link
+        to={`/admin/courses/${courseId}/chapters/${chapter.id}`}
+        className="flex-1 hover:underline"
+      >
+        {chapter.title}
+      </Link>
       {chapter.is_free_preview && (
         <span className="text-xs bg-muted px-2 py-1">免费预览</span>
       )}

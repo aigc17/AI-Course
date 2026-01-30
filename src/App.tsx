@@ -24,6 +24,7 @@ import Dashboard from './pages/admin/Dashboard';
 import CourseList from './pages/admin/CourseList';
 import CourseCreate from './pages/admin/CourseCreate';
 import CourseEdit from './pages/admin/CourseEdit';
+import ChapterEdit from './pages/admin/ChapterEdit';
 
 // Layout wrapper to conditionally hide footer or handle layout specifics
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -56,6 +57,7 @@ function App() {
           <Route path="courses" element={<CourseList />} />
           <Route path="courses/new" element={<CourseCreate />} />
           <Route path="courses/:id" element={<CourseEdit />} />
+          <Route path="courses/:courseId/chapters/:chapterId" element={<ChapterEdit />} />
         </Route>
 
         {/* Public Routes - 带 Navbar/Footer */}

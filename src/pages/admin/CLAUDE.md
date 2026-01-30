@@ -9,7 +9,8 @@
 - `Dashboard.tsx`: 管理后台首页，数据概览
 - `CourseList.tsx`: 课程列表页
 - `CourseCreate.tsx`: 创建课程页
-- `CourseEdit.tsx`: 编辑课程页
+- `CourseEdit.tsx`: 编辑课程页（含章节列表）
+- `ChapterEdit.tsx`: 章节内容编辑页（Novel 富文本编辑器）
 
 **⚠️ 自指声明**：页面增删或职责变动时更新本文档。
 
