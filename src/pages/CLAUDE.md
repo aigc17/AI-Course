@@ -9,7 +9,7 @@
 - `Home.tsx`: 首页，Hero + 特性展示
 - `Courses.tsx`: 课程列表页
 - `CourseDetail.tsx`: 课程详情页
-- `DesignSystem.tsx`: 设计系统展示页
+- `DesignSystem.tsx`: 设计系统展示页，微拟物组件变体展示
 
 ## 设计系统约束
 
