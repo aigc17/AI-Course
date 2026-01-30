@@ -56,14 +56,14 @@ const CourseDetail = () => {
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <div className="group relative flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-primary shadow-xl transition-transform hover:scale-110 active:scale-95">
-                    <Play className="ml-1 h-8 w-8 fill-white text-white" />
+                    <Play className="ml-1 h-8 w-8 fill-primary-foreground text-primary-foreground" />
                     <div className="absolute inset-0 -z-10 animate-ping rounded-full bg-primary opacity-30"></div>
                 </div>
-                <p className="mt-4 font-medium text-white drop-shadow-md">预览模式 - 点击播放</p>
+                <p className="mt-4 font-medium text-foreground drop-shadow-md">预览模式 - 点击播放</p>
             </div>
             
             {/* Fake Progress Bar */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted">
                 <div className="h-full w-1/3 bg-primary"></div>
             </div>
           </div>
