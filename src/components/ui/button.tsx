@@ -1,54 +1,127 @@
+/**
+ * [INPUT]: @radix-ui/react-slot - Slot 组件
+ * [INPUT]: class-variance-authority - 样式变体管理
+ * [INPUT]: lucide-react - 图标
+ * [OUTPUT]: Button, buttonVariants - 按钮组件和样式变体
+ * [POS]: UI 基础层 - 核心交互原语，微拟物光影质感
+ *
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-
+import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+// ============================================================================
+// 按钮样式配置 - 渐变 + 立体效果
+// ============================================================================
+
+const BUTTON_STYLES = {
+  default: {
+    background: 'linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 85%, black) 50%, color-mix(in srgb, var(--primary) 70%, black) 100%)',
+    boxShadow: '0 4px 12px color-mix(in srgb, var(--primary) 35%, transparent), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.1)',
+    hoverBoxShadow: '0 6px 20px color-mix(in srgb, var(--primary) 45%, transparent), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+  },
+  destructive: {
+    background: 'linear-gradient(135deg, var(--destructive) 0%, color-mix(in srgb, var(--destructive) 85%, black) 50%, color-mix(in srgb, var(--destructive) 70%, black) 100%)',
+    boxShadow: '0 4px 12px color-mix(in srgb, var(--destructive) 35%, transparent), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.1)',
+    hoverBoxShadow: '0 6px 20px color-mix(in srgb, var(--destructive) 45%, transparent), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+  },
+  secondary: {
+    background: 'linear-gradient(135deg, var(--secondary) 0%, color-mix(in srgb, var(--secondary) 90%, black) 50%, color-mix(in srgb, var(--secondary) 80%, black) 100%)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.05)',
+    hoverBoxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08)',
+  },
+  outline: {
+    background: 'transparent',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',
+    hoverBoxShadow: '0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)',
+  },
+  ghost: { background: 'transparent', boxShadow: 'none', hoverBoxShadow: 'none' },
+  link: { background: 'transparent', boxShadow: 'none', hoverBoxShadow: 'none' },
+}
+
+// ============================================================================
+// CVA 样式变体
+// ============================================================================
+
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  [
+    "inline-flex items-center justify-center gap-2",
+    "whitespace-nowrap text-sm font-medium",
+    "rounded-2xl",
+    "transition-all duration-200",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    "disabled:pointer-events-none disabled:opacity-50",
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    "active:scale-[0.97] hover:scale-[1.02]",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        default: "text-primary-foreground",
+        destructive: "text-destructive-foreground",
+        secondary: "text-secondary-foreground",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        sm: "h-8 px-4 text-xs rounded-xl",
+        default: "h-9 px-5 py-2 rounded-2xl",
+        md: "h-10 px-6 py-2.5 rounded-2xl",
+        lg: "h-12 px-10 rounded-2xl",
+        xl: "h-14 px-12 py-4 text-lg rounded-3xl",
+        icon: "h-10 w-10 rounded-2xl",
       },
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+    defaultVariants: { variant: "default", size: "default" },
   }
 )
+
+// ============================================================================
+// Button 组件
+// ============================================================================
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  isLoading?: boolean
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant = "default", size, asChild = false, isLoading, leftIcon, rightIcon, children, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const [isHovered, setIsHovered] = React.useState(false)
+
+    const styleConfig = BUTTON_STYLES[variant || "default"]
+    const needsCustomStyle = !['ghost', 'link'].includes(variant || "default")
+
+    const combinedStyle = needsCustomStyle ? {
+      background: styleConfig.background,
+      boxShadow: isHovered ? styleConfig.hoverBoxShadow : styleConfig.boxShadow,
+      ...style,
+    } : style
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={isLoading || props.disabled}
+        style={combinedStyle}
+        onMouseEnter={(e) => { setIsHovered(true); props.onMouseEnter?.(e) }}
+        onMouseLeave={(e) => { setIsHovered(false); props.onMouseLeave?.(e) }}
         {...props}
-      />
+      >
+        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : leftIcon}
+        {children}
+        {!isLoading && rightIcon}
+      </Comp>
     )
   }
 )
