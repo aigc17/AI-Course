@@ -1,32 +1,40 @@
 # AI Nexus 课程平台 - 技术架构文档
 
-> 版本: v0.1 | 状态: 草稿 | 更新: 2026-01-30
+> 版本: v0.2 | 状态: 草稿 | 更新: 2026-01-30
 
 ## 1. 技术栈总览
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Frontend                                  │
-│  React 18 + TypeScript + Vite + TailwindCSS + shadcn/ui         │
+│  React 19 + TypeScript + Vite + TailwindCSS + shadcn/ui         │
 │  Novel Editor (课程内容编辑)                                     │
 └─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     Cloudflare Edge                              │
-├─────────────────────────────────────────────────────────────────┤
-│  Pages      │ 前端静态托管，全球 CDN 分发                        │
-│  Workers    │ 后端 API，边缘计算                                 │
-│  D1         │ SQLite 数据库，边缘分布式                          │
-│  R2         │ 对象存储 (图片、文件)                              │
-│  Stream     │ 视频托管、转码、分发                               │
-│  KV         │ 键值存储 (Session、缓存)                           │
-└─────────────────────────────────────────────────────────────────┘
+          │                                    │
+          ▼                                    ▼
+┌─────────────────────────┐    ┌─────────────────────────────────┐
+│      Supabase           │    │        Cloudflare               │
+├─────────────────────────┤    ├─────────────────────────────────┤
+│  Auth    │ 用户认证     │    │  Pages  │ 前端静态托管          │
+│  PostgreSQL │ 数据库    │    │  R2     │ 图片存储              │
+│  Realtime │ 实时订阅    │    │  Stream │ 视频托管              │
+└─────────────────────────┘    └─────────────────────────────────┘
 ```
 
-## 2. 前端架构
+## 2. 架构分工
 
-### 2.1 目录结构
+| 职责 | 服务 | 说明 |
+|------|------|------|
+| 前端托管 | Cloudflare Pages | 全球 CDN，自动部署 |
+| 用户认证 | Supabase Auth | 邮箱/OAuth，开箱即用 |
+| 数据库 | Supabase PostgreSQL | 关系型数据库，Row Level Security |
+| 图片存储 | Cloudflare R2 | S3 兼容，无出口费用 |
+| 视频托管 | Cloudflare Stream | 自动转码，HLS 分发 |
+| 实时功能 | Supabase Realtime | 学习进度实时同步 (可选) |
+
+## 3. 前端架构
+
+### 3.1 目录结构
 
 ```
 src/
@@ -42,257 +50,343 @@ src/
 │   ├── auth/           # 认证页面 (新增)
 │   └── admin/          # 管理后台页面 (新增)
 ├── hooks/              # 自定义 Hooks (新增)
-├── services/           # API 调用层 (新增)
-├── stores/             # 状态管理 (新增)
-├── types/              # TypeScript 类型 (新增)
-└── lib/                # 工具函数
+├── lib/
+│   ├── supabase.ts     # Supabase 客户端 (新增)
+│   ├── cloudflare.ts   # Cloudflare API (新增)
+│   └── utils.ts
+├── stores/             # Zustand 状态管理 (新增)
+└── types/              # TypeScript 类型 (新增)
 ```
 
-### 2.2 状态管理
+### 3.2 Supabase 客户端
 
 ```typescript
-// 使用 Zustand 轻量状态管理
-// stores/auth.ts
-interface AuthStore {
-  user: User | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database';
+
+export const supabase = createClient<Database>(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 ```
 
-### 2.3 路由守卫
+### 3.3 认证 Hook
 
 ```typescript
-// 需要登录的路由
-const ProtectedRoute = ({ children }) => {
-  const { user, isLoading } = useAuth();
-  if (isLoading) return <Loading />;
+// hooks/useAuth.ts
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
+
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 获取当前会话
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // 监听认证状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => setUser(session?.user ?? null)
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return { user, loading };
+};
+```
+
+### 3.4 路由守卫
+
+```typescript
+// components/ProtectedRoute.tsx
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <Loading />;
   if (!user) return <Navigate to="/auth/login" />;
-  return children;
-};
 
-// 需要购买的路由
-const PurchasedRoute = ({ courseId, children }) => {
-  const { hasPurchased } = usePurchase(courseId);
-  if (!hasPurchased) return <Navigate to={`/courses/${courseId}`} />;
   return children;
 };
 ```
 
-## 3. 后端架构 (Cloudflare Workers)
-
-### 3.1 API 设计
-
-```
-API Base: /api/v1
-
-# 认证
-POST   /auth/register        注册
-POST   /auth/login           登录
-POST   /auth/logout          登出
-GET    /auth/me              当前用户
-POST   /auth/oauth/:provider OAuth 回调
-
-# 课程 (公开)
-GET    /courses              课程列表
-GET    /courses/:id          课程详情
-GET    /courses/:id/chapters 章节列表 (预览)
-
-# 课程 (需购买)
-GET    /courses/:id/learn    完整学习内容
-GET    /chapters/:id/content 章节完整内容
-
-# 订单
-POST   /orders               创建订单
-GET    /orders               我的订单
-GET    /orders/:id           订单详情
-POST   /orders/:id/pay       发起支付
-
-# 学习进度
-GET    /progress/:courseId   课程进度
-POST   /progress/:chapterId  更新进度
-
-# 管理后台 (需 Admin 权限)
-POST   /admin/courses        创建课程
-PUT    /admin/courses/:id    更新课程
-DELETE /admin/courses/:id    删除课程
-POST   /admin/chapters       创建章节
-PUT    /admin/chapters/:id   更新章节
-POST   /admin/upload/image   上传图片 (R2)
-POST   /admin/upload/video   上传视频 (Stream)
-```
-
-### 3.2 Workers 项目结构
-
-```
-workers/
-├── src/
-│   ├── index.ts            # 入口，路由分发
-│   ├── routes/
-│   │   ├── auth.ts         # 认证路由
-│   │   ├── courses.ts      # 课程路由
-│   │   ├── orders.ts       # 订单路由
-│   │   ├── progress.ts     # 进度路由
-│   │   └── admin.ts        # 管理路由
-│   ├── middleware/
-│   │   ├── auth.ts         # JWT 验证
-│   │   ├── admin.ts        # Admin 权限
-│   │   └── cors.ts         # CORS 处理
-│   ├── services/
-│   │   ├── db.ts           # D1 数据库操作
-│   │   ├── storage.ts      # R2 存储操作
-│   │   └── stream.ts       # Stream 视频操作
-│   └── types/
-│       └── index.ts        # 类型定义
-├── schema.sql              # D1 数据库 Schema
-├── wrangler.toml           # Workers 配置
-└── package.json
-```
-
-### 3.3 技术选型
-
-| 组件 | 选择 | 理由 |
-|------|------|------|
-| 框架 | Hono | 轻量、类型安全、专为 Workers 设计 |
-| ORM | Drizzle | 类型安全、支持 D1、轻量 |
-| 验证 | Zod | 运行时类型验证 |
-| JWT | jose | 边缘环境兼容 |
-
-## 4. 数据库设计 (D1)
+## 4. 数据库设计 (Supabase PostgreSQL)
 
 ### 4.1 Schema
 
 ```sql
--- 用户表
-CREATE TABLE users (
-  id TEXT PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT,
+-- 启用 UUID 扩展
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 用户资料表 (扩展 auth.users)
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT,
-  avatar TEXT,
-  role TEXT DEFAULT 'student',
-  oauth_provider TEXT,
-  oauth_id TEXT,
-  created_at INTEGER DEFAULT (unixepoch()),
-  updated_at INTEGER DEFAULT (unixepoch())
+  avatar_url TEXT,
+  role TEXT DEFAULT 'student' CHECK (role IN ('student', 'admin')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 课程表
 CREATE TABLE courses (
-  id TEXT PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
   description TEXT,
-  cover_image TEXT,
-  price INTEGER NOT NULL,
-  status TEXT DEFAULT 'draft',
+  cover_url TEXT,
+  price INTEGER NOT NULL DEFAULT 0,
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
   category TEXT,
-  instructor TEXT,
-  created_at INTEGER DEFAULT (unixepoch()),
-  updated_at INTEGER DEFAULT (unixepoch())
+  instructor_id UUID REFERENCES profiles(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 章节表
 CREATE TABLE chapters (
-  id TEXT PRIMARY KEY,
-  course_id TEXT NOT NULL REFERENCES courses(id),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
-  sort_order INTEGER NOT NULL,
-  type TEXT NOT NULL,
-  content TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  type TEXT NOT NULL CHECK (type IN ('video', 'article')),
+  content JSONB,
   video_id TEXT,
   duration INTEGER,
-  is_free_preview INTEGER DEFAULT 0,
-  created_at INTEGER DEFAULT (unixepoch()),
-  updated_at INTEGER DEFAULT (unixepoch())
+  is_free_preview BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 订单表
 CREATE TABLE orders (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  course_id TEXT NOT NULL REFERENCES courses(id),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id),
+  course_id UUID NOT NULL REFERENCES courses(id),
   amount INTEGER NOT NULL,
-  status TEXT DEFAULT 'pending',
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'refunded')),
   payment_method TEXT,
   payment_id TEXT,
-  created_at INTEGER DEFAULT (unixepoch()),
-  updated_at INTEGER DEFAULT (unixepoch())
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 学习进度表
 CREATE TABLE progress (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  course_id TEXT NOT NULL REFERENCES courses(id),
-  chapter_id TEXT NOT NULL REFERENCES chapters(id),
-  completed INTEGER DEFAULT 0,
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id),
+  chapter_id UUID NOT NULL REFERENCES chapters(id),
+  completed BOOLEAN DEFAULT FALSE,
   progress_percent INTEGER DEFAULT 0,
   last_position INTEGER DEFAULT 0,
-  updated_at INTEGER DEFAULT (unixepoch()),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, chapter_id)
 );
 
 -- 索引
 CREATE INDEX idx_chapters_course ON chapters(course_id);
 CREATE INDEX idx_orders_user ON orders(user_id);
-CREATE INDEX idx_progress_user_course ON progress(user_id, course_id);
+CREATE INDEX idx_progress_user ON progress(user_id);
 ```
 
-## 5. 存储设计
+### 4.2 Row Level Security (RLS)
 
-### 5.1 R2 对象存储
+```sql
+-- 启用 RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chapters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE progress ENABLE ROW LEVEL SECURITY;
+
+-- Profiles: 用户只能读写自己的资料
+CREATE POLICY "Users can view own profile"
+  ON profiles FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile"
+  ON profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Courses: 所有人可读已发布课程，Admin 可写
+CREATE POLICY "Anyone can view published courses"
+  ON courses FOR SELECT USING (status = 'published');
+
+CREATE POLICY "Admins can manage courses"
+  ON courses FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Chapters: 所有人可读，Admin 可写
+CREATE POLICY "Anyone can view chapters"
+  ON chapters FOR SELECT USING (TRUE);
+
+CREATE POLICY "Admins can manage chapters"
+  ON chapters FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- Orders: 用户只能看自己的订单
+CREATE POLICY "Users can view own orders"
+  ON orders FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create orders"
+  ON orders FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Progress: 用户只能读写自己的进度
+CREATE POLICY "Users can manage own progress"
+  ON progress FOR ALL USING (auth.uid() = user_id);
+```
+
+### 4.3 触发器
+
+```sql
+-- 自动创建用户资料
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id, name, avatar_url)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'name', NEW.email),
+    NEW.raw_user_meta_data->>'avatar_url'
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- 自动更新 updated_at
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_courses_updated_at
+  BEFORE UPDATE ON courses
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE TRIGGER update_chapters_updated_at
+  BEFORE UPDATE ON chapters
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+```
+
+## 5. 认证设计 (Supabase Auth)
+
+### 5.1 支持的认证方式
+
+| 方式 | 说明 |
+|------|------|
+| Email + Password | 邮箱密码注册登录 |
+| Magic Link | 邮箱魔法链接 |
+| GitHub OAuth | GitHub 第三方登录 |
+| Google OAuth | Google 第三方登录 |
+
+### 5.2 前端认证实现
+
+```typescript
+// 邮箱注册
+const signUp = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  return { data, error };
+};
+
+// 邮箱登录
+const signIn = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  return { data, error };
+};
+
+// OAuth 登录
+const signInWithGitHub = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
+  return { data, error };
+};
+
+// 登出
+const signOut = async () => {
+  await supabase.auth.signOut();
+};
+```
+
+## 6. 存储设计 (Cloudflare)
+
+### 6.1 R2 对象存储
 
 ```
 Bucket: ai-nexus-assets
 
 目录结构:
-/covers/          课程封面图
-/content/         文章内容图片
-/avatars/         用户头像
+/covers/{course_id}/     课程封面图
+/content/{chapter_id}/   文章内容图片
+/avatars/{user_id}/      用户头像
 ```
 
-### 5.2 Cloudflare Stream
+### 6.2 图片上传流程
+
+```typescript
+// 1. 前端获取预签名 URL (通过 Supabase Edge Function)
+const getUploadUrl = async (filename: string, contentType: string) => {
+  const { data } = await supabase.functions.invoke('get-upload-url', {
+    body: { filename, contentType },
+  });
+  return data.uploadUrl;
+};
+
+// 2. 前端直传到 R2
+const uploadImage = async (file: File) => {
+  const uploadUrl = await getUploadUrl(file.name, file.type);
+  await fetch(uploadUrl, {
+    method: 'PUT',
+    body: file,
+    headers: { 'Content-Type': file.type },
+  });
+  return uploadUrl.split('?')[0]; // 返回公开 URL
+};
+```
+
+### 6.3 Cloudflare Stream 视频
 
 ```
 视频上传流程:
-1. 前端请求上传 URL
-2. Workers 调用 Stream API 获取 TUS 上传 URL
-3. 前端直传视频到 Stream
-4. Stream 自动转码 (HLS/DASH)
-5. 保存 video_id 到数据库
-6. 播放时使用 Stream Player 或 HLS.js
+1. 前端请求 TUS 上传 URL (通过 Supabase Edge Function)
+2. 前端使用 tus-js-client 直传视频
+3. Stream 自动转码 (HLS/DASH)
+4. 保存 video_id 到数据库
+5. 播放时使用 Stream Player 或 HLS.js
 ```
-
-## 6. 认证设计
-
-### 6.1 JWT 结构
 
 ```typescript
-interface JWTPayload {
-  sub: string;      // user_id
-  email: string;
-  role: 'student' | 'admin';
-  exp: number;      // 过期时间
-  iat: number;      // 签发时间
-}
-```
+// 视频播放组件
+import Stream from '@cloudflare/stream-react';
 
-### 6.2 认证流程
-
-```
-邮箱登录:
-1. 用户提交 email + password
-2. Workers 验证密码 (bcrypt)
-3. 生成 JWT，存入 HttpOnly Cookie
-4. 返回用户信息
-
-OAuth 登录:
-1. 前端跳转 OAuth Provider
-2. 回调到 /auth/oauth/:provider
-3. Workers 获取用户信息
-4. 创建/更新用户记录
-5. 生成 JWT，重定向到前端
+const VideoPlayer = ({ videoId }: { videoId: string }) => (
+  <Stream
+    controls
+    src={videoId}
+    poster={`https://customer-xxx.cloudflarestream.com/${videoId}/thumbnails/thumbnail.jpg`}
+  />
+);
 ```
 
 ## 7. 内容编辑器 (Novel)
@@ -323,89 +417,57 @@ const CourseEditor = ({ content, onChange }) => {
 };
 ```
 
-### 7.2 图片上传
+## 8. 环境变量
 
-```typescript
-// 自定义图片上传处理
-const uploadImage = async (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
+### 8.1 前端 (.env)
 
-  const res = await fetch('/api/v1/admin/upload/image', {
-    method: 'POST',
-    body: formData,
-  });
-
-  const { url } = await res.json();
-  return url; // R2 公开 URL
-};
+```bash
+VITE_SUPABASE_URL=https://xxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJxxx
+VITE_CF_STREAM_CUSTOMER_CODE=customer-xxx
 ```
 
-## 8. 部署配置
+### 8.2 Supabase Edge Functions
 
-### 8.1 wrangler.toml
-
-```toml
-name = "ai-nexus-api"
-main = "src/index.ts"
-compatibility_date = "2024-01-01"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "ai-nexus-db"
-database_id = "<your-database-id>"
-
-[[r2_buckets]]
-binding = "ASSETS"
-bucket_name = "ai-nexus-assets"
-
-[[kv_namespaces]]
-binding = "SESSIONS"
-id = "<your-kv-id>"
-
-[vars]
-ENVIRONMENT = "production"
-```
-
-### 8.2 环境变量
-
-```
-JWT_SECRET=<your-jwt-secret>
-STREAM_API_TOKEN=<cloudflare-stream-token>
-STREAM_ACCOUNT_ID=<cloudflare-account-id>
+```bash
+CF_R2_ACCESS_KEY_ID=xxx
+CF_R2_SECRET_ACCESS_KEY=xxx
+CF_R2_BUCKET_NAME=ai-nexus-assets
+CF_R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
+CF_STREAM_API_TOKEN=xxx
+CF_STREAM_ACCOUNT_ID=xxx
 ```
 
 ## 9. 开发计划
 
-### Phase 1: 基础设施
+### Phase 1: 基础设施 + 认证
 
 ```
 Week 1:
-- [ ] 创建 Cloudflare 资源 (D1, R2, KV)
-- [ ] 初始化 Workers 项目
-- [ ] 实现数据库 Schema
-- [ ] 实现基础 CRUD API
+- [ ] 创建 Supabase 项目
+- [ ] 实现数据库 Schema + RLS
+- [ ] 配置 OAuth (GitHub/Google)
+- [ ] 前端认证页面 (登录/注册)
+- [ ] 路由守卫
 
 Week 2:
-- [ ] 实现用户认证 (邮箱 + JWT)
-- [ ] 实现 OAuth (GitHub)
-- [ ] 前端认证页面
-- [ ] 路由守卫
+- [ ] 创建 Cloudflare R2 Bucket
+- [ ] 实现图片上传 (Supabase Edge Function)
+- [ ] 用户资料页面
 ```
 
-### Phase 2: 核心功能
+### Phase 2: 课程管理
 
 ```
 Week 3:
 - [ ] 管理后台框架
 - [ ] 课程 CRUD 页面
 - [ ] Novel 编辑器集成
-- [ ] R2 图片上传
+- [ ] 章节管理
 
 Week 4:
 - [ ] Cloudflare Stream 集成
 - [ ] 视频上传/播放
-- [ ] 章节管理
 - [ ] 学习页面
 ```
 

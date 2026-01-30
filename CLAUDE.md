@@ -1,6 +1,6 @@
 # AI Nexus - AI 付费课程平台
 
-> L1 | React 19 + TypeScript + Vite 6 + Tailwind CSS v4 + shadcn/ui + Cloudflare
+> L1 | React 19 + TypeScript + Vite 6 + Tailwind CSS v4 + shadcn/ui + Supabase + Cloudflare
 
 ## 目录结构
 
@@ -26,19 +26,27 @@
 │   ├── index.css     - 全局样式
 │   ├── constants.ts  - 数据常量
 │   └── types.ts      - 类型定义
-└── workers/          - Cloudflare Workers 后端 (待创建)
+└── supabase/         - Supabase Edge Functions (待创建)
 ```
 
-## 后端技术栈 (Cloudflare)
+## 后端技术栈 (混合架构)
+
+### Supabase (数据 + 认证)
+
+| 服务 | 用途 |
+|------|------|
+| Auth | 用户认证 (邮箱/OAuth) |
+| PostgreSQL | 关系型数据库 |
+| Edge Functions | 服务端逻辑 |
+| Realtime | 实时订阅 (可选) |
+
+### Cloudflare (存储 + 托管)
 
 | 服务 | 用途 |
 |------|------|
 | Pages | 前端静态托管 |
-| Workers | 后端 API |
-| D1 | SQLite 数据库 |
 | R2 | 对象存储 (图片) |
 | Stream | 视频托管 |
-| KV | Session 缓存 |
 
 ## 设计系统约束
 
