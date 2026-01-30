@@ -6,14 +6,25 @@
 
 ## 成员清单
 
-- `phase-1-auth.md`: Phase 1 - 基础设施 + 认证 (20 任务)
-- `phase-2-course.md`: Phase 2 - 课程管理 (26 任务)
-- `phase-3-payment.md`: Phase 3 - 支付闭环 (20 任务)
+- `phase-1-infra.md`: Phase 1 - 最小基础设施 (6 任务)
+- `phase-2-course.md`: Phase 2 - 课程管理核心 (16 任务)
+- `phase-3-auth.md`: Phase 3 - 用户认证 (10 任务)
+- `phase-4-storage.md`: Phase 4 - 存储功能 (8 任务)
+- `phase-5-payment.md`: Phase 5 - 支付闭环 (20 任务)
 
-## 阶段依赖
+## 开发路径
 
 ```
-Phase 1 → Phase 2 → Phase 3
+Phase 1 最小基础设施
+    ↓ Supabase + 数据库就绪
+Phase 2 课程管理核心
+    ↓ 管理后台 + CRUD + 编辑器
+Phase 3 用户认证
+    ↓ 登录/注册 + 权限保护
+Phase 4 存储功能
+    ↓ R2 图片 + Stream 视频
+Phase 5 支付闭环
+    ↓ 订单 + 支付 + 学习进度
 ```
 
 **⚠️ 自指声明**：阶段增删时更新本文档。
