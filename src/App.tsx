@@ -18,6 +18,13 @@ import CourseDetail from './pages/CourseDetail';
 import DesignSystem from './pages/DesignSystem';
 import LandingPage from './pages/LandingPage';
 
+// Admin
+import { AdminLayout } from './components/admin';
+import Dashboard from './pages/admin/Dashboard';
+import CourseList from './pages/admin/CourseList';
+import CourseCreate from './pages/admin/CourseCreate';
+import CourseEdit from './pages/admin/CourseEdit';
+
 // Layout wrapper to conditionally hide footer or handle layout specifics
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -42,15 +49,28 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/courses/:id" element={<CourseDetail />} />
-          <Route path="/design-system" element={<DesignSystem />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        {/* Admin Routes - 独立布局 */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="courses" element={<CourseList />} />
+          <Route path="courses/new" element={<CourseCreate />} />
+          <Route path="courses/:id" element={<CourseEdit />} />
+        </Route>
+
+        {/* Public Routes - 带 Navbar/Footer */}
+        <Route path="/*" element={
+          <Layout>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<CourseDetail />} />
+              <Route path="/design-system" element={<DesignSystem />} />
+            </Routes>
+          </Layout>
+        } />
+      </Routes>
     </BrowserRouter>
   );
 }
