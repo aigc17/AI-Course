@@ -17,8 +17,8 @@ const schema = readFileSync(schemaPath, 'utf-8');
 
 console.log('Schema SQL loaded, length:', schema.length);
 
-// 使用 Supabase 直接连接
-const connectionString = `postgresql://postgres:VyAIbPZaIFJ8UuC2@db.jpydxopdnrqyqhjkzenc.supabase.co:5432/postgres`;
+// 使用 Supabase Transaction pooler
+const connectionString = `postgresql://postgres.jpydxopdnrqyqhjkzenc:VyAIbPZaIFJ8UuC2@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres`;
 
 const client = new pg.Client({
   connectionString,
@@ -27,6 +27,7 @@ const client = new pg.Client({
 
 try {
   console.log('Connecting to database...');
+  console.log('Host: db.jpydxopdnrqyqhjkzenc.supabase.co:5432');
   await client.connect();
   console.log('Connected! Executing schema...');
 
