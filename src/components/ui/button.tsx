@@ -18,21 +18,36 @@ import { cn } from "@/lib/utils"
 // 按钮样式配置 - 渐变 + 立体效果
 // ============================================================================
 
+// 渐变背景生成器
+const gradient = (v: string, stops: number[]) =>
+  `linear-gradient(135deg, var(--${v}) 0%, ` +
+  `color-mix(in srgb, var(--${v}) ${stops[0]}%, black) 50%, ` +
+  `color-mix(in srgb, var(--${v}) ${stops[1]}%, black) 100%)`
+
+// 阴影生成器
+const shadow = (v: string, blur: number, opacity: number) =>
+  `0 ${blur / 3}px ${blur}px color-mix(in srgb, var(--${v}) ${opacity}%, transparent), ` +
+  `inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.1)`
+
+const hoverShadow = (v: string, blur: number, opacity: number) =>
+  `0 ${blur / 3}px ${blur}px color-mix(in srgb, var(--${v}) ${opacity}%, transparent), ` +
+  `inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)`
+
 const BUTTON_STYLES = {
   default: {
-    background: 'linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 85%, black) 50%, color-mix(in srgb, var(--primary) 70%, black) 100%)',
-    boxShadow: '0 4px 12px color-mix(in srgb, var(--primary) 35%, transparent), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.1)',
-    hoverBoxShadow: '0 6px 20px color-mix(in srgb, var(--primary) 45%, transparent), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+    background: gradient('primary', [85, 70]),
+    boxShadow: shadow('primary', 12, 35),
+    hoverBoxShadow: hoverShadow('primary', 20, 45),
   },
   destructive: {
-    background: 'linear-gradient(135deg, var(--destructive) 0%, color-mix(in srgb, var(--destructive) 85%, black) 50%, color-mix(in srgb, var(--destructive) 70%, black) 100%)',
-    boxShadow: '0 4px 12px color-mix(in srgb, var(--destructive) 35%, transparent), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.1)',
-    hoverBoxShadow: '0 6px 20px color-mix(in srgb, var(--destructive) 45%, transparent), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+    background: gradient('destructive', [85, 70]),
+    boxShadow: shadow('destructive', 12, 35),
+    hoverBoxShadow: hoverShadow('destructive', 20, 45),
   },
   secondary: {
-    background: 'linear-gradient(135deg, var(--secondary) 0%, color-mix(in srgb, var(--secondary) 90%, black) 50%, color-mix(in srgb, var(--secondary) 80%, black) 100%)',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.05)',
-    hoverBoxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.08)',
+    background: gradient('secondary', [90, 80]),
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+    hoverBoxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)',
   },
   outline: {
     background: 'transparent',
@@ -107,6 +122,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       boxShadow: isHovered ? styleConfig.hoverBoxShadow : styleConfig.boxShadow,
       ...style,
     } : style
+
+    // asChild 模式：直接透传 children，不添加 icon
+    if (asChild) {
+      return (
+        <Comp
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          style={combinedStyle}
+          onMouseEnter={(e) => { setIsHovered(true); props.onMouseEnter?.(e) }}
+          onMouseLeave={(e) => { setIsHovered(false); props.onMouseLeave?.(e) }}
+          {...props}
+        >
+          {children}
+        </Comp>
+      )
+    }
 
     return (
       <Comp
