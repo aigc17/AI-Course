@@ -17,8 +17,8 @@ const schema = readFileSync(schemaPath, 'utf-8');
 
 console.log('Schema SQL loaded, length:', schema.length);
 
-// 尝试使用 service role key 作为密码连接
-const connectionString = `postgresql://postgres:sb_secret_w7_WOGoLllrc-VvcxWkitA_F_Mqu4L4@db.jpydxopdnrqyqhjkzenc.supabase.co:5432/postgres`;
+// 使用 Supabase pooler 连接 (Transaction mode)
+const connectionString = `postgresql://postgres.jpydxopdnrqyqhjkzenc:VyAIbPZaIFJ8UuC2@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres`;
 
 const client = new pg.Client({
   connectionString,
