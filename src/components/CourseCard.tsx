@@ -11,8 +11,8 @@
 import { Star, Users, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Course } from '../types';
-import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
+import { Card, CardContent } from './ui/layout';
+import { Badge } from './ui/display';
 
 // ============================================================================
 // Sub Components
@@ -20,8 +20,8 @@ import { Badge } from './ui/badge';
 
 const PlayOverlay = () => (
   <div className="absolute inset-0 flex items-center justify-center bg-background/40 opacity-0 transition-opacity group-hover:opacity-100">
-    <div className="rounded-full bg-primary p-3">
-      <PlayCircle className="h-6 w-6 text-primary-foreground" />
+    <div className="bg-foreground p-3">
+      <PlayCircle className="h-6 w-6 text-background" />
     </div>
   </div>
 );
@@ -29,9 +29,9 @@ const PlayOverlay = () => (
 const Thumbnail = ({ src, alt, duration }: { src: string; alt: string; duration: string }) => (
   <div className="relative aspect-video w-full overflow-hidden">
     <img src={src} alt={alt} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+    <div className="absolute inset-0 bg-black/30" />
     <PlayOverlay />
-    <div className="absolute bottom-2 right-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+    <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 text-xs font-medium text-white">
       {duration}
     </div>
   </div>
@@ -50,7 +50,7 @@ const CardMeta = ({ level, rating }: { level: string; rating: number }) => (
 const CardFooter = ({ instructor, students }: { instructor: string; students: string }) => (
   <div className="flex items-center justify-between border-t border-border pt-3">
     <div className="flex items-center gap-2">
-      <div className="h-5 w-5 rounded-full bg-muted" />
+      <div className="h-5 w-5 bg-muted" />
       <span className="text-xs text-muted-foreground">{instructor}</span>
     </div>
     <div className="flex items-center gap-1 text-muted-foreground">
@@ -71,11 +71,11 @@ interface CourseCardProps {
 
 const CourseCard = ({ course, onClick }: CourseCardProps) => (
   <motion.div whileHover={{ y: -4 }} className="cursor-pointer" onClick={() => onClick(course.id)}>
-    <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+    <Card className="group overflow-hidden transition-colors hover:border-foreground">
       <Thumbnail src={course.thumbnail} alt={course.title} duration={course.duration} />
       <CardContent className="p-4">
         <CardMeta level={course.level} rating={course.rating} />
-        <h3 className="mb-2 line-clamp-2 font-semibold group-hover:text-primary">{course.title}</h3>
+        <h3 className="mb-2 line-clamp-2 font-semibold">{course.title}</h3>
         <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">{course.description}</p>
         <CardFooter instructor={course.instructor} students={course.students} />
       </CardContent>

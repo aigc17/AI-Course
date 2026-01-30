@@ -9,7 +9,7 @@
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Button } from '../ui/button'
+import { Button } from '../ui/form'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
 
 // ============================================================================

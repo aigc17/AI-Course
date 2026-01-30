@@ -9,7 +9,7 @@
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { fadeInUp, staggerContainer, viewportConfig } from '@/lib/motion'
-import { Button } from '../../ui/button'
+import { Button } from '../../ui/form'
 
 // ============================================================================
 // 内容配置

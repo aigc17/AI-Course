@@ -8,8 +8,8 @@
 
 import { Bot, Github, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Separator } from './ui/separator';
-import { Button } from './ui/button';
+import { Separator } from './ui/layout';
+import { Button } from './ui/form';
 
 // ============================================================================
 // Footer Components
@@ -17,8 +17,8 @@ import { Button } from './ui/button';
 
 const FooterBrand = () => (
   <div className="flex items-center gap-2">
-    <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-      <Bot className="h-4 w-4 text-primary-foreground" />
+    <div className="flex h-7 w-7 items-center justify-center bg-foreground">
+      <Bot className="h-4 w-4 text-background" />
     </div>
     <span className="font-semibold">AI Nexus</span>
   </div>

@@ -11,7 +11,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Brain, Rocket } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/button';
+import { Button } from '../components/ui/form';
 
 // ============================================================================
 // Feature Card

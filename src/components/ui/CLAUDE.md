@@ -2,32 +2,28 @@
 
 > L2 | 父级: /AI-Course/src/components/CLAUDE.md
 
-> shadcn/ui 基础组件，微拟物光影质感设计系统
+> shadcn/ui 基础组件，极简直角黑白风格设计系统
 
-## 成员清单
+## 目录结构
 
-- `button.tsx`: 按钮组件，渐变+立体效果，支持 loading/icon
-- `card.tsx`: 卡片组件，凸起/内凹变体
-- `input.tsx`: 输入框组件，内凹效果
-- `badge.tsx`: 徽章组件，渐变背景
-- `label.tsx`: 标签组件
-- `dialog.tsx`: 对话框组件
-- `sheet.tsx`: 侧边栏组件
-- `separator.tsx`: 分隔线组件
-- `skeleton.tsx`: 骨架屏组件
-- `navigation-menu.tsx`: 导航菜单组件
+- `form/`: 表单组件 (Button, Input, Label)
+- `layout/`: 布局组件 (Card, Separator)
+- `overlay/`: 覆盖层组件 (Dialog, Sheet)
+- `display/`: 展示组件 (Badge, Avatar, Skeleton)
+- `navigation/`: 导航组件 (Accordion, NavigationMenu)
+- `index.ts`: 统一导出入口
 
 ## 设计语言
 
-**微拟物 = 渐变背景 + 立体阴影 + 微交互**
+**极简 = 直角 + 黑白 + 边框**
 
 | 元素类型 | 效果 |
 |---------|------|
-| 凸起元素 | 外投影 + 顶部高光 |
-| 内凹元素 | inset 阴影 |
-| 颜色 | CSS 变量 + color-mix |
-| 圆角 | 20px+ |
+| 容器 | border border-border |
+| 按钮 | bg-foreground text-background |
+| 输入 | border border-border |
+| 圆角 | 无 (直角) |
 
-**⚠️ 自指声明**：组件增删或 variant 变动时更新本文档。
+**⚠️ 自指声明**：子目录增删或设计语言变动时更新本文档。
 
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md

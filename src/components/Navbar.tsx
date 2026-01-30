@@ -9,7 +9,7 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { Bot, Sparkles } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from './ui/form';
 
 const Navbar = () => {
   const location = useLocation();
@@ -20,8 +20,8 @@ const Navbar = () => {
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Bot className="h-5 w-5 text-primary-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center bg-foreground">
+            <Bot className="h-5 w-5 text-background" />
           </div>
           <span className="text-lg font-semibold">AI Nexus</span>
         </Link>

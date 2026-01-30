@@ -1,16 +1,16 @@
 /**
- * [INPUT]: @/components/ui/* - 微拟物设计系统组件
+ * [INPUT]: @/components/ui/* - 极简设计系统组件
  * [OUTPUT]: DesignSystem - 设计系统展示页面
- * [POS]: 设计系统文档页，展示所有组件变体和微拟物效果
+ * [POS]: 设计系统文档页，展示所有组件变体和极简风格
  *
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Badge } from '../components/ui/badge';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
+import { Button } from '../components/ui/form';
+import { Input } from '../components/ui/form';
+import { Badge } from '../components/ui/display';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../components/ui/layout';
+import { Separator } from '../components/ui/layout';
 import { ArrowRight, Download, Heart, Mail, Plus, Send, Star } from 'lucide-react';
 
 // ============================================================================
