@@ -23,10 +23,7 @@ const CARD_STYLES = {
     `.trim().replace(/\s+/g, ' '),
   },
   inset: {
-    boxShadow: `
-      inset 0 2px 8px rgba(0,0,0,0.1),
-      inset 0 1px 2px rgba(0,0,0,0.08)
-    `.trim().replace(/\s+/g, ' '),
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
   },
   flat: {
     boxShadow: 'none',
