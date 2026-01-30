@@ -17,8 +17,8 @@ const schema = readFileSync(schemaPath, 'utf-8');
 
 console.log('Schema SQL loaded, length:', schema.length);
 
-// 使用 Supabase Transaction pooler
-const connectionString = `postgresql://postgres.jpydxopdnrqyqhjkzenc:VyAIbPZaIFJ8UuC2@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres`;
+// 使用 Supabase Session pooler (IPv4 compatible)
+const connectionString = `postgresql://postgres.jpydxopdnrqyqhjkzenc:VyAIbPZaIFJ8UuC2@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres`;
 
 const client = new pg.Client({
   connectionString,

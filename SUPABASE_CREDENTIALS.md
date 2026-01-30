@@ -8,7 +8,7 @@
 |------|-----|
 | 项目名 | AI-kecheng |
 | Project Ref | jpydxopdnrqyqhjkzenc |
-| Region | (查看 Dashboard) |
+| Region | ap-southeast-1 |
 
 ## API Keys
 
@@ -26,15 +26,14 @@ SUPABASE_SERVICE_ROLE_KEY=sb_secret_w7_WOGoLllrc-VvcxWkitA_F_Mqu4L4
 ## 数据库连接
 
 ```
-# 连接字符串格式
-postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+# Session Pooler (IPv4 兼容，推荐)
+postgresql://postgres.jpydxopdnrqyqhjkzenc:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
 
-# 直接连接（需要数据库密码）
-Host: db.jpydxopdnrqyqhjkzenc.supabase.co
-Port: 5432
-Database: postgres
-User: postgres
-Password: [你的数据库密码]
+# Transaction Pooler (无状态应用)
+postgresql://postgres.jpydxopdnrqyqhjkzenc:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
+
+# 直接连接（需要 IPv6）
+postgresql://postgres:[PASSWORD]@db.jpydxopdnrqyqhjkzenc.supabase.co:5432/postgres
 ```
 
 ## AI 使用指南
