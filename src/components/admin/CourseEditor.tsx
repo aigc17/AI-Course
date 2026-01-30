@@ -6,9 +6,24 @@
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
-import { EditorRoot, EditorContent, type JSONContent } from 'novel';
+import { EditorRoot, EditorContent, type JSONContent, StarterKit, Placeholder } from 'novel';
 import { useState } from 'react';
 import { Button } from '@/components/ui/form/button';
+
+// ============================================================================
+// 编辑器扩展配置
+// ============================================================================
+
+const extensions = [
+  StarterKit.configure({
+    bulletList: { HTMLAttributes: { class: 'list-disc list-outside ml-4' } },
+    orderedList: { HTMLAttributes: { class: 'list-decimal list-outside ml-4' } },
+    heading: { HTMLAttributes: { class: 'font-bold' } },
+    blockquote: { HTMLAttributes: { class: 'border-l-4 border-border pl-4 italic' } },
+    codeBlock: { HTMLAttributes: { class: 'bg-muted p-4 font-mono text-sm' } },
+  }),
+  Placeholder.configure({ placeholder: '开始编写内容...' }),
+];
 
 // ============================================================================
 // 类型定义
@@ -39,6 +54,7 @@ export function CourseEditor({ initialContent, onSave }: CourseEditorProps) {
       <div className="border border-border min-h-[400px]">
         <EditorRoot>
           <EditorContent
+            extensions={extensions}
             initialContent={initialContent}
             onUpdate={({ editor }) => {
               setContent(editor.getJSON());
