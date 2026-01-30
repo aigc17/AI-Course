@@ -10,6 +10,7 @@
 - `Courses.tsx`: 课程列表页
 - `CourseDetail.tsx`: 课程详情页
 - `DesignSystem.tsx`: 设计系统展示页，微拟物组件变体展示
+- `LandingPage.tsx`: 营销落地页，组合所有 Landing Section 组件
 
 ## 设计系统约束
 

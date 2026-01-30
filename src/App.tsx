@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import DesignSystem from './pages/DesignSystem';
+import LandingPage from './pages/LandingPage';
 
 // Layout wrapper to conditionally hide footer or handle layout specifics
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -44,6 +45,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetail />} />
           <Route path="/design-system" element={<DesignSystem />} />

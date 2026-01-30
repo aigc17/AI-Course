@@ -10,6 +10,7 @@
 - `Footer.tsx`: 全局页脚，极简设计
 - `CourseCard.tsx`: 课程卡片展示组件
 - `ui/`: shadcn/ui 原子组件目录
+- `landing/`: 落地页 Section 组件（Hero, LogoBar, Pricing 等）
 
 ## 设计系统约束
 

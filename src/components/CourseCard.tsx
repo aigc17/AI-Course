@@ -29,10 +29,10 @@ const PlayOverlay = () => (
 const Thumbnail = ({ src, alt, duration }: { src: string; alt: string; duration: string }) => (
   <div className="relative aspect-video w-full overflow-hidden">
     <img src={src} alt={alt} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
     <PlayOverlay />
-    <div className="absolute bottom-2 right-2">
-      <Badge variant="secondary" className="text-xs">{duration}</Badge>
+    <div className="absolute bottom-2 right-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+      {duration}
     </div>
   </div>
 );
