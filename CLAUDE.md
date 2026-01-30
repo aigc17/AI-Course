@@ -1,39 +1,55 @@
-# AI Nexus - AI 课程平台
+# AI Nexus - AI 付费课程平台
 
-> L1 | React 19 + TypeScript + Vite 6 + Tailwind CSS v4 + shadcn/ui
+> L1 | React 19 + TypeScript + Vite 6 + Tailwind CSS v4 + shadcn/ui + Cloudflare
 
 ## 目录结构
 
 ```
-src/
-├── components/   - UI 组件层
-│   ├── ui/       - shadcn/ui 原子组件
-│   ├── Navbar.tsx
-│   ├── Footer.tsx
-│   └── CourseCard.tsx
-├── pages/        - 页面组件
-│   ├── Home.tsx
-│   ├── Courses.tsx
-│   ├── CourseDetail.tsx
-│   └── DesignSystem.tsx
-├── lib/          - 工具函数
-├── App.tsx       - 应用根组件
-├── index.tsx     - 应用入口
-├── index.css     - 全局样式
-├── constants.ts  - 数据常量
-└── types.ts      - 类型定义
+/
+├── docs/             - 产品与技术文档
+│   ├── PRD.md        - 产品需求文档
+│   └── TECH-SPEC.md  - 技术架构文档
+├── src/
+│   ├── components/   - UI 组件层
+│   │   ├── ui/       - shadcn/ui 原子组件
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── CourseCard.tsx
+│   ├── pages/        - 页面组件
+│   │   ├── Home.tsx
+│   │   ├── Courses.tsx
+│   │   ├── CourseDetail.tsx
+│   │   └── DesignSystem.tsx
+│   ├── lib/          - 工具函数
+│   ├── App.tsx       - 应用根组件
+│   ├── index.tsx     - 应用入口
+│   ├── index.css     - 全局样式
+│   ├── constants.ts  - 数据常量
+│   └── types.ts      - 类型定义
+└── workers/          - Cloudflare Workers 后端 (待创建)
 ```
+
+## 后端技术栈 (Cloudflare)
+
+| 服务 | 用途 |
+|------|------|
+| Pages | 前端静态托管 |
+| Workers | 后端 API |
+| D1 | SQLite 数据库 |
+| R2 | 对象存储 (图片) |
+| Stream | 视频托管 |
+| KV | Session 缓存 |
 
 ## 设计系统约束
 
-**微拟物光影质感设计语言**：
+**极简直角黑白设计语言**：
 
 | 元素类型 | 效果 |
 |---------|------|
-| 凸起元素 | 渐变背景 + 外投影 + 顶部高光 |
-| 内凹元素 | inset 阴影 |
-| 颜色 | CSS 变量 + color-mix |
-| 圆角 | 20px+ |
+| 容器 | border border-border |
+| 按钮 | bg-foreground text-background |
+| 输入 | border border-border |
+| 圆角 | 无 (直角) |
 
 **一切设计必须来自设计系统的颜色和组件**：
 
