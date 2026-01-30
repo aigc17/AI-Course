@@ -8,6 +8,7 @@
 
 - `utils.ts`: cn() 类名合并工具（shadcn 标准）
 - `motion.ts`: Framer Motion 动画变体预设
+- `supabase.ts`: Supabase 客户端实例，数据库操作入口
 
 **⚠️ 自指声明**：工具函数增删或职责变动时更新本文档。
 
